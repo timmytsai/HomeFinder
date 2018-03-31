@@ -1,0 +1,53 @@
+{
+	"section": {
+		"Zhongzheng": false,
+		"Datong": false,
+		"Zhongshan": false,
+		"Songshan": false,
+		"Daan": true,
+		"Wanhua": false,	
+		"Xinyi": false,
+		"Shilin": false,
+		"Beitou": false,
+		"Neihu": true,
+		"Nangang": false,
+		"Wenshan": false
+	},
+	"rent": {
+		"//": "How much?",
+		"start_price": 15000,
+		"end_price": 20000
+	},
+	"area": {
+		"//": "How big?",
+		"start_area": 10,
+		"end_area": 20
+	},
+	"equipment": {
+		"tv": true,
+		"cold": false,
+		"icebox": false,
+		"hotwater": false,
+		"naturalgas": false,
+		"four": false,
+		"broadband": false,
+		"washer": true,
+		"bed": false,
+		"wardrobe": false,
+		"sofa": true
+	},
+	"other": {
+		"cartplace": true,
+		"lift": false,
+		"balcony_1": false,
+		"cook": false,
+		"pet": false,
+		"tragoods": false
+	},
+	"not_cover": 1,
+	"smtp": {
+		"account": "giveuahome@gmail.com",
+		"password": "qazplm01",
+		"recipients": "smalleye7881@gmail.com"
+	}
+}
