@@ -150,11 +150,14 @@ def main():
 	agent = HomeFinder()
 	query_objects = agent.get_top_object_id_list()
 
-	with open('591_object_list', 'r') as file:
-		content = file.read()
+	try:
+		with open('591_object_list', 'r') as file:
+			content = file.read()
+	except IOError:
+		open('591_object_list', 'w')
+		content =''
 
 	original_objects = content.strip().split('\n')
-
 	new_objects = agent.diff(query_objects, original_objects)
 	print 'new object: {0}'.format(len(new_objects))
 	
