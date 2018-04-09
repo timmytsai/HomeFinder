@@ -146,9 +146,7 @@ class HomeFinder():
 		smtp.sendmail(msg['From'], receivers , msg.as_string())
 		print 'Send mails to {0}'.format(msg['To'])
 
-
-
-if __name__ == '__main__':
+def main():
 	agent = HomeFinder()
 	query_objects = agent.get_top_object_id_list()
 
@@ -166,3 +164,8 @@ if __name__ == '__main__':
 
 	if new_objects:
 		agent.send_notification(new_objects)
+
+
+
+if __name__ == '__main__':
+	main()
