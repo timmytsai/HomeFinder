@@ -4,38 +4,31 @@ import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 
-requests.packages.urllib3.disable_warnings()
+import section
 
-SECTION_NUM = {
-	"Zhongzheng": "1",
-	"Datong": "2",
-	"Zhongshan": "3",
-	"Songshan": "4",
-	"Daan": "5",
-	"Wanhua": "6",	
-	"Xinyi": "7",
-	"Shilin": "8",
-	"Beitou": "9",
-	"Neihu": "10",
-	"Nangang": "11",
-	"Wenshan": "12"
-}
+requests.packages.urllib3.disable_warnings()
 
 class HomeFinder():
 
 	def __init__(self):
 		self.config = json.load(open('config.json'))
 
-	def get_section(self):
-		section = None
-		for k, v in self.config['section'].iteritems():
-			if v is True:
-				if section is None:
-					section = SECTION_NUM[k]
-				else:
-					section += ',' + SECTION_NUM[k]
+		self.url = 'https://rent.591.com.tw/home/search/rsList?is_new_list=1&type=1&region=1&order=posttime&orderType=asc'
+		self.headers = {
+		    'User-Agent': 'My User Agent 1.0',
+		    'Cookie': 'urlJumpIp=1'
+		}
 
-		return section
+	def get_section(self, city):
+		sections = None
+		for k, v in self.config[city].iteritems():
+			if v is True:
+				if sections is None:
+					sections = section.SECTION_NUM[k]
+				else:
+					sections += ',' + section.SECTION_NUM[k]
+
+		return sections
 
 	def get_rent_price(self):
 		start_price = str(self.config['rent']['start_price'])
@@ -76,48 +69,53 @@ class HomeFinder():
 
 		return not_cover
 
+	def build_url(self, city):
+		base_url = self.url
 
-	def build_url(self):
-		url = 'https://rent.591.com.tw/home/search/rsList?is_new_list=1&type=1&region=1&order=posttime&orderType=asc'
-
-		section = self.get_section()
+		section = self.get_section(city)
 		if section is not None:
-			url += '&section=' + section
+			base_url += '&section=' + section
 
 		price = self.get_rent_price()
-		url += '&rentprice=' + price
+		base_url += '&rentprice=' + price
 
 		area = self.get_area()
-		url += '&area=' + area
+		base_url += '&area=' + area
 
 		other = self.get_other_condition()
-		url += '&other=' + other
+		base_url += '&other=' + other
 
 		equipment = self.get_equipment()
-		url += '&option=' + equipment
+		base_url += '&option=' + equipment
 
 		not_cover = self.get_cover()
-		url += '&not_cover=' + not_cover
+		base_url += '&not_cover=' + not_cover
 
-		return url
+		return base_url
+
+	def set_cookies(self, city):
+		city_num = section.CITY_NUM[city]
+		self.headers['Cookie'] = 'urlJumpIp={0}'.format(city_num)
 
 	def diff(self, new_list, original_list):
 	    second = set(original_list)
 	    return [item for item in new_list if item not in original_list]
 
 	def get_top_object_id_list(self):
-		url = self.build_url()
-		headers = {
-		    'User-Agent': 'My User Agent 1.0',
-		}
-		response = requests.get(url, headers=headers)
-		raw_datas = json.loads(response.text)
-		top_objects = raw_datas['data']['data']
 		query_objects = []
-		for house in top_objects:
-			query_objects.append(str(house['post_id']))
+		for k, v in self.config['city'].iteritems():
+			if v:
+				url = self.build_url(k)
+				self.set_cookies(k)
+				print url
+				response = requests.get(url, headers=self.headers)
+				raw_datas = json.loads(response.text)
+				top_objects = raw_datas['data']['data']
+				for house in top_objects:
+					query_objects.append(str(house['post_id']))
 
 		return query_objects
+
 
 	def send_notification(self, new_objects):
 		sender = self.config['smtp']['account']
