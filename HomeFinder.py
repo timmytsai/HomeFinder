@@ -20,6 +20,11 @@ class HomeFinder():
 		}
 
 	def get_section(self, city):
+		""" Get enabled sections of city from config.json
+
+		Keyword arguments:
+		city -- Taipei & New_Taipei
+		"""
 		sections = None
 		for k, v in self.config[city].iteritems():
 			if v is True:
@@ -31,18 +36,24 @@ class HomeFinder():
 		return sections
 
 	def get_rent_price(self):
+		""" Get price range from config.json
+		"""
 		start_price = str(self.config['rent']['start_price'])
 		end_price = str(self.config['rent']['end_price'])
 
 		return start_price + ',' + end_price
 
 	def get_area(self):
+		""" Get how big configurations from config.json
+		"""
 		start_area = str(self.config['area']['start_area'])
 		end_area = str(self.config['area']['end_area'])
 
 		return start_area + ',' + end_area
 
 	def get_equipment(self):
+		""" Get wanted equipments from config.json
+		"""
 		equipment = None
 		for k, v in self.config['equipment'].iteritems():
 			if v is True:
@@ -54,9 +65,11 @@ class HomeFinder():
 		return equipment
 
 	def get_other_condition(self):
+		""" Get other conditions from config.json
+		"""
 		other = None
 		for k, v in self.config['other'].iteritems():
-			if v is True:
+			if v:
 				if other is None:
 					other = k
 				else:
@@ -65,11 +78,18 @@ class HomeFinder():
 		return other
 
 	def get_cover(self):
+		""" Get cover condition from config.json
+		"""
 		not_cover = str(self.config['not_cover'])
 
 		return not_cover
 
 	def build_url(self, city):
+		""" Build requested url
+
+		Keyword arguments:
+		city -- Taipei & New_Taipei
+		"""
 		base_url = self.url
 
 		section = self.get_section(city)
@@ -94,10 +114,21 @@ class HomeFinder():
 		return base_url
 
 	def set_cookies(self, city):
+		""" Set which city you want to parse
+
+		Keyword arguments:
+		city -- Taipei & New_Taipei
+		"""
 		city_num = section.CITY_NUM[city]
 		self.headers['Cookie'] = 'urlJumpIp={0}'.format(city_num)
 
 	def diff(self, new_list, original_list):
+		""" Compare parsed objects with existed objects
+
+		Keyword arguments:
+		new_list -- parsed objects
+		original_list -- existed objects
+		"""
 	    second = set(original_list)
 	    return [item for item in new_list if item not in original_list]
 
@@ -118,6 +149,11 @@ class HomeFinder():
 
 
 	def send_notification(self, new_objects):
+		""" Send notifivation mail
+
+		Keyword arguments:
+		new_objects -- new objects list
+		"""
 		sender = self.config['smtp']['account']
 		passwd = self.config['smtp']['password']
 		receivers = self.config['smtp']['recipients']
